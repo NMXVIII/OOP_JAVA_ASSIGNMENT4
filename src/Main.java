@@ -19,5 +19,8 @@ public class Main {
             System.out.println("Error while connecting to database:");
             e.printStackTrace();
         }
+
+        CafeteriaApp app = new CafeteriaApp();
+        app.run();
     }
 }
