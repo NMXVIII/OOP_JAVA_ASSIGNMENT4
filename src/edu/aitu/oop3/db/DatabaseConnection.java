@@ -1,9 +1,11 @@
 package edu.aitu.oop3.db;
+
+import interfaces.IDB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseConnection {
+public class DatabaseConnection implements IDB {
     private static final String URL =
             "jdbc:postgresql://aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require";
     private static final String USER = "postgres.qepbsaknuarilyswpvzl";
@@ -19,6 +21,7 @@ public class DatabaseConnection {
         if (instance == null) {
             instance = new DatabaseConnection();
         }
+        return instance;
     }
 
     @Override

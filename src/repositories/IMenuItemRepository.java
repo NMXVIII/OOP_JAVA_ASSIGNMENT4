@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IMenuItemRepository {
     void save(MenuItem item) throws  SQLException;
-    List<MenuItem> findALL() throws SQLException;
+    List<MenuItem> findAll() throws SQLException;
     MenuItem findById(int id) throws  SQLException;
 }

@@ -4,6 +4,7 @@ import entities.MenuItem;
 import repositories.MenuItemRepository;
 
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +26,7 @@ public class CafeteriaApp {
             System.out.println("2. Show all Menu items");
             System.out.println("3. Find by ID");
             System.out.print("4. Quit");
-            System.out.print("Choose: ");
+            System.out.print("\nChoose: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -49,27 +50,52 @@ public class CafeteriaApp {
         }
     }
     private void addMenuItem() {
-        System.out.print("Name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Description: ");
-        String desc = scanner.nextLine();
-
-        System.out.print("Price: ");
-        Double price = scanner.nextDouble();
-
-        System.out.print("Quantity: ");
-        Integer qty = scanner.nextInt();
-        scanner.nextLine();
-
         try {
-            MenuItem item = new MenuItem(name, desc, price, qty);
-            repo.save(item);
-            System.out.println("Item added!");
+            System.out.print("Name: ");
+            String name = scanner.nextLine();
+
+            if (name == null || name.trim().isEmpty()) {
+                System.out.println("Error: Name cannot be empty!");
+                return;
+            }
+
+            System.out.print("Description: ");
+            String desc = scanner.nextLine();
+
+            System.out.print("Price: ");
+            Double price = scanner.nextDouble();
+
+            if(price < 0) {
+                 System.out.println("Error: Price cannot be negative!");
+                 scanner.nextLine();
+                  return;
+             }
+
+             System.out.print("Quantity: ");
+             Integer qty = scanner.nextInt();
+             scanner.nextLine();
+
+             if ( qty < 0) {
+                 System.out.println("Error: Quantity cannot be negative!");
+                  return;
+             }
+
+             MenuItem item = new MenuItem(name, desc, price, qty);
+             repo.save(item);
+              System.out.println("Item added!");
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Error: Please enter valid numbers for price and quantity! ");
+            scanner.nextLine();
+        }  catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            scanner.nextLine();
         }
     }
+
+
     private void showAllMenuItems() {
         try {
             List<MenuItem> items = repo.findAll();
@@ -83,17 +109,23 @@ public class CafeteriaApp {
     }
 
     private void findMenuItem() {
-        System.out.print("ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
         try {
+            System.out.print("ID: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
             MenuItem item = repo.findById(id);
             System.out.println(item);
-        } catch (Exception e) {
-            System.out.println("Not found!");
-        }
 
+        } catch (SQLException e) {
+            System.out.println("Error: Item not found with that ID!");
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Error: Please enter a valid number!");
+            scanner.nextLine();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            scanner.nextLine();
+        }
     }
 
     public MenuItemRepository getRepo() {
