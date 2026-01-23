@@ -3,52 +3,49 @@ package entities;
 import java.util.List;
 
 public class Order {
-    private Integer id;
+
+    private int id;
     private int customerId;
-    private String address;
+    private String status;
     private boolean completed;
     private List<OrderItem> items;
 
-    public Order(int customerId, String address, List<OrderItem> items) {
+    public Order(int customerId) {
         this.customerId = customerId;
-        this.address = address;
-        this.items = items;
         this.completed = false;
+        this.status = "NEW";
     }
 
-    public Order(int id, int customerId, String address,boolean completed, List<OrderItem> items) {
+    public Order(int id, String status, List<OrderItem> items) {
+        this.id = id;
+        this.status = status;
+        this.items = items;
+    }
+
+    public Order(int id, int customerId, String status, boolean completed, List<OrderItem> items) {
         this.id = id;
         this.customerId = customerId;
-        this.address = address;
+        this.status = status;
         this.completed = completed;
         this.items = items;
     }
 
-    public Integer getId() { return id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
     public int getCustomerId() { return customerId; }
-    public String getAddress () { return address; }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
     public boolean isCompleted() { return completed; }
-    public List<OrderItem> getItems() { return items; }
 
-    public void setId(Integer id) { this.id = id; }
-    public void setCompleted(boolean completed) { this.completed = completed; }
-
-    public double getTotalPrice() {
-        double total = 0;
-       // for (OrderItem Item : items) total += items.getTotal();
-        return total;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id =" + id +
-                ", customerId =" + customerId +
-                ", address='" + address +'\'' +
-                "; completed =" + completed +
-                ", totalPrice =" +  getTotalPrice() +
-                '}';
-    }
-
-
 }

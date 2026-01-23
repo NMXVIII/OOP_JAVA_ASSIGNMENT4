@@ -26,5 +26,11 @@ public class OrderItem {
     }
 
     public Integer getId() { return id; }
+    public int getMenuItemId() {
+        return menuItemId;
+    }
 
+    public int getQuantity() {
+        return quantity;
+    }
 }
