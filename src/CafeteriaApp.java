@@ -7,6 +7,7 @@ import repositories.MenuItemRepository;
 import services.MenuService;
 import services.OrderService;
 import exceptions.*;
+import services.PaymentService;
 
 
 import java.sql.SQLException;
@@ -19,6 +20,8 @@ public class CafeteriaApp {
     private MenuService menuService;
     private OrderService orderService;
     private Scanner scanner;
+    private PaymentService paymentService;
+
 
     public CafeteriaApp() {
         IDB db = (IDB) DatabaseConnection.getInstance();
@@ -26,6 +29,8 @@ public class CafeteriaApp {
         this.menuService = new MenuService(repo);
         this.orderService = new OrderService(repo);
         this.scanner = new Scanner(System.in);
+        this.paymentService = new PaymentService();
+
     }
 
     public void run(){
@@ -68,6 +73,9 @@ public class CafeteriaApp {
                     viewMenu();
                     break;
                 case 8:
+                    payForOrder();
+                    break;
+                case 9:
                     System.out.println("Goodbye!");
                         return;
                 default:
@@ -272,6 +280,23 @@ public class CafeteriaApp {
     public void setRepo(MenuItemRepository repo) {
         this.repo = repo;
     }
+    private void payForOrder() {
+        try {
+            System.out.print("Enter order ID to pay: ");
+            int orderId = getIntInput();
+
+            Order order = orderService.getOrderById(orderId);
+            paymentService.processPayment(order);
+
+            System.out.println("🧾 Order paid and completed!");
+
+        } catch (OrderNotFoundException e) {
+            System.out.println("❌ " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Payment failed: " + e.getMessage());
+        }
+    }
+
 
 
 }
