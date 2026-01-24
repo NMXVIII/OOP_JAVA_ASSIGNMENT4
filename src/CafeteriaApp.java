@@ -44,7 +44,8 @@ public class CafeteriaApp {
             System.out.println("5. View active orders");
             System.out.println("6. Mark order as completed");
             System.out.println("7. View menu");
-            System.out.print("8. Quit");
+            System.out.println("8. Pay for order");
+            System.out.print("9. Quit");
             System.out.print("\nChoose: ");
 
             int choice = scanner.nextInt();
