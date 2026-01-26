@@ -15,7 +15,10 @@ public class MenuService {
     }
 
     public List<MenuItem> getAllAvailableItems() throws SQLException {
-        return menuRepo.findAll();
+        return menuRepo.findAll()
+                .stream()
+                .filter(item -> item.getQuantity() > 0)
+                .toList();
     }
 
     public MenuItem getMenuItemById(int id) throws SQLException, MenuItemNotAvailableException{

@@ -11,9 +11,7 @@ public class DatabaseConnection implements IDB {
     private static final String USER = "postgres.qepbsaknuarilyswpvzl";
     private static final String PASSWORD = "bevdib-zUsmug-sebwo5";
 
-    private static DatabaseConnection instance; /* Singleton Pattern:checks so we have
-     only ONE DatabaseConnection obj in entire program*/
-
+    private static DatabaseConnection instance;
     private DatabaseConnection() {
     }
 

@@ -7,12 +7,10 @@ import exceptions.InvalidQuantityException;
 import exceptions.MenuItemNotAvailableException;
 import exceptions.OrderNotFoundException;
 import repositories.IMenuItemRepository;
-
 import java.sql.SQLException;
 import java.util.*;
 
 public class OrderService {
-
     private final IMenuItemRepository menuRepo;
     private final Map<Integer, Order> activeOrders = new HashMap<>();
     private int nextOrderId = 1;
@@ -45,11 +43,8 @@ public class OrderService {
         order.setId(nextOrderId++);
         order.setItems(items);
 
-
-
         activeOrders.put(order.getId(), order);
         return order;
-
     }
 
     public List<Order> getActiveOrders() {

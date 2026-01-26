@@ -12,15 +12,15 @@ public class PaymentService {
         }
 
         if (order.isCompleted()) {
-            System.out.println("⚠ Order is already completed.");
+            System.out.println(" Order is already completed.");
             return;
         }
 
         double total = calculateTotal(order);
 
-        System.out.println("💳 Processing payment...");
-        System.out.printf("💰 Total amount: $%.2f%n", total);
-        System.out.println("✅ Payment successful!");
+        System.out.println(" Processing payment...");
+        System.out.printf("Total amount: $%.2f%n", total);
+        System.out.println("Payment successful!");
 
         order.setCompleted(true);
     }

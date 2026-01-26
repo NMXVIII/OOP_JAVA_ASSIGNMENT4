@@ -47,5 +47,6 @@ public class Order {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+        this.status = completed ? "COMPLETED" : "ACTIVE";
     }
 }

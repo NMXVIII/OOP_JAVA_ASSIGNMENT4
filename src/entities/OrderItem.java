@@ -16,15 +16,6 @@ public class OrderItem {
         this.price = price;
     }
 
-    public OrderItem(Integer id, int orderId, String menuItemName, int quantity , double price) {
-        this.id = id;
-        this.orderId = orderId;
-        this.menuItemId = menuItemId;
-        this.menuItemName = menuItemName;
-        this.quantity = quantity;
-        this.price = price;
-    }
-
     public Integer getId() { return id; }
     public int getMenuItemId() {
         return menuItemId;

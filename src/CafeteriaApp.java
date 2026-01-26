@@ -8,8 +8,6 @@ import services.MenuService;
 import services.OrderService;
 import exceptions.*;
 import services.PaymentService;
-
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,22 +28,20 @@ public class CafeteriaApp {
         this.orderService = new OrderService(repo);
         this.scanner = new Scanner(System.in);
         this.paymentService = new PaymentService();
-
     }
 
-    public void run(){
+    public void run() {
         System.out.println("Welcome to Cafeteria!");
 
-        while(true) {
+        while (true) {
             System.out.println("\n1. Add Menu item");
-            System.out.println("2. Show all Menu items");
-            System.out.println("3. Find by ID");
-            System.out.println("4. Place an order");
-            System.out.println("5. View active orders");
-            System.out.println("6. Mark order as completed");
-            System.out.println("7. View menu");
-            System.out.println("8. Pay for order");
-            System.out.print("9. Quit");
+            System.out.println("2. Find by ID");
+            System.out.println("3. Place an order");
+            System.out.println("4. View active orders");
+            System.out.println("5. Mark order as completed");
+            System.out.println("6. View menu");
+            System.out.println("7. Pay for order");
+            System.out.print("8. Quit");
             System.out.print("\nChoose: ");
 
             int choice = scanner.nextInt();
@@ -56,34 +52,32 @@ public class CafeteriaApp {
                     addMenuItem();
                     break;
                 case 2:
-                    showAllMenuItems();
-                        break;
-                case 3:
                     findMenuItem();
-                        break;
-                case 4:
+                    break;
+                case 3:
                     placeOrder();
                     break;
-                case 5:
+                case 4:
                     viewActiveOrders();
                     break;
-                case 6:
+                case 5:
                     markOrderCompleted();
                     break;
-                case 7:
+                case 6:
                     viewMenu();
                     break;
-                case 8:
+                case 7:
                     payForOrder();
                     break;
-                case 9:
+                case 8:
                     System.out.println("Goodbye!");
-                        return;
+                    return;
                 default:
                     System.out.println("Invalid choice");
-                }
+            }
         }
     }
+
     private void addMenuItem() {
         try {
             System.out.print("Name: ");
@@ -100,47 +94,34 @@ public class CafeteriaApp {
             System.out.print("Price: ");
             Double price = scanner.nextDouble();
 
-            if(price < 0) {
-                 System.out.println("Error: Price cannot be negative!");
-                 scanner.nextLine();
-                  return;
-             }
+            if (price < 0) {
+                System.out.println("Error: Price cannot be negative!");
+                scanner.nextLine();
+                return;
+            }
 
-             System.out.print("Quantity: ");
-             Integer qty = scanner.nextInt();
-             scanner.nextLine();
+            System.out.print("Quantity: ");
+            Integer qty = scanner.nextInt();
+            scanner.nextLine();
 
-             if ( qty < 0) {
-                 System.out.println("Error: Quantity cannot be negative!");
-                  return;
-             }
+            if (qty < 0) {
+                System.out.println("Error: Quantity cannot be negative!");
+                return;
+            }
 
-             MenuItem item = new MenuItem(name, desc, price, qty);
-             repo.save(item);
-              System.out.println("Item added!");
+            MenuItem item = new MenuItem(name, desc, price, qty);
+            menuService.addMenuItem(item);
+            System.out.println("Item added!");
         } catch (java.util.InputMismatchException e) {
             System.out.println("Error: Please enter valid numbers for price and quantity! ");
             scanner.nextLine();
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             scanner.nextLine();
         }
-    }
-
-
-    private void showAllMenuItems() {
-        try {
-            List<MenuItem> items = repo.findAll();
-            for (MenuItem item : items) {
-                System.out.println(item);
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-
     }
 
     private void findMenuItem() {
@@ -162,11 +143,11 @@ public class CafeteriaApp {
             scanner.nextLine();
         }
     }
+
     private void placeOrder() {
         try {
             System.out.print("Enter customer ID: ");
             int customerId = getIntInput();
-
             List<OrderItem> orderItems = new ArrayList<>();
 
             while (true) {
@@ -179,17 +160,20 @@ public class CafeteriaApp {
 
                 System.out.print("\nEnter menu item ID (0 to finish): ");
                 int menuItemId = getIntInput();
-
                 if (menuItemId == 0) break;
 
                 System.out.print("Enter quantity: ");
                 int quantity = getIntInput();
+                if (quantity <= 0) {
+                    System.out.println("Quantity must be greater than 0");
+                    continue;
+                }
 
                 MenuItem menuItem = menuService.getMenuItemById(menuItemId);
                 OrderItem orderItem = new OrderItem(0, menuItemId, menuItem.getName(),
                         quantity, menuItem.getPrice());
                 orderItems.add(orderItem);
-                System.out.println("✅ Added to order!");
+                System.out.println("Added to order!");
             }
 
             if (orderItems.isEmpty()) {
@@ -198,14 +182,14 @@ public class CafeteriaApp {
             }
 
             Order order = orderService.placeOrder(customerId, orderItems);
-            System.out.println("✅ Order placed successfully! Order ID: " + order.getId());
+            System.out.println("Order placed successfully! Order ID: " + order.getId());
 
         } catch (InvalidQuantityException e) {
-            System.out.println("❌ " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         } catch (MenuItemNotAvailableException e) {
-            System.out.println("❌ " + e.getMessage());
+            System.out.println("Error " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -225,7 +209,7 @@ public class CafeteriaApp {
                         " | Completed: " + order.isCompleted());
             }
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -235,12 +219,12 @@ public class CafeteriaApp {
             int orderId = getIntInput();
 
             orderService.markOrderAsCompleted(orderId);
-            System.out.println("✅ Order marked as completed!");
+            System.out.println("Order marked as completed!");
 
         } catch (OrderNotFoundException e) {
-            System.out.println("❌ " + e.getMessage());
+            System.out.println("Error:" + e.getMessage());
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -257,7 +241,7 @@ public class CafeteriaApp {
                 System.out.println("---");
             }
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -281,6 +265,7 @@ public class CafeteriaApp {
     public void setRepo(MenuItemRepository repo) {
         this.repo = repo;
     }
+
     private void payForOrder() {
         try {
             System.out.print("Enter order ID to pay: ");
@@ -289,15 +274,12 @@ public class CafeteriaApp {
             Order order = orderService.getOrderById(orderId);
             paymentService.processPayment(order);
 
-            System.out.println("🧾 Order paid and completed!");
+            System.out.println("Order paid and completed!");
 
         } catch (OrderNotFoundException e) {
-            System.out.println("❌ " + e.getMessage());
+            System.out.println("Error:" + e.getMessage());
         } catch (Exception e) {
-            System.out.println("❌ Payment failed: " + e.getMessage());
+            System.out.println("Payment failed: " + e.getMessage());
         }
     }
-
-
-
 }
