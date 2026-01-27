@@ -144,30 +144,43 @@ public class CafeteriaApp {
         }
     }
 
-    private void placeOrder()  {
+    private void placeOrder() {
+        try {
             System.out.print("Enter customer ID: ");
             int customerId = getIntInput();
             List<OrderItem> orderItems = new ArrayList<>();
 
             while (true) {
-                try {
-                    menuService.getAllAvailableItems().forEach(System.out::println);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                System.out.println("\n--- Available Menu ---");
+                List<MenuItem> menu = menuService.getAllAvailableItems();
+                for (MenuItem item : menu) {
+                    System.out.printf("ID: %d | %s - $%.2f (Available: %d)%n",
+                            item.getId(), item.getName(), item.getPrice(), item.getQuantity());
                 }
+
                 System.out.print("\nEnter menu item ID (0 to finish): ");
                 int menuItemId = getIntInput();
                 if (menuItemId == 0) break;
+
                 System.out.print("Enter quantity: ");
                 int quantity = getIntInput();
-                orderItems.add(new OrderItem(0, menuItemId, null, quantity, 0.0));
+
+                try {
+                    MenuItem item = menuService.getMenuItemById(menuItemId);
+                    if (item == null) throw new MenuItemNotAvailableException("Item ID " + menuItemId + " not found!");
+                    if (item.getQuantity() < quantity) throw new InvalidQuantityException("Only " + item.getQuantity() + " left!");
+
+                    orderItems.add(new OrderItem(0, menuItemId, item.getName(), quantity, item.getPrice()));
+                    System.out.println(" Added to order!");
+                } catch (MenuItemNotAvailableException | InvalidQuantityException e) {
+                    System.out.println("\n ERROR: " + e.getMessage());
+                }
             }
-            try{
-            Order order = orderService.placeOrder(customerId, orderItems);
-            System.out.println("Order placed successfully! Order ID: " + order.getId());
-            } catch (MenuItemNotAvailableException | InvalidQuantityException e) {
-            System.out.println("Error: " + e.getMessage());
-            } catch (Exception e) {
+            if (!orderItems.isEmpty()) {
+                Order order = orderService.placeOrder(customerId, orderItems);
+                System.out.println(" Order placed successfully! Order ID: " + order.getId());
+            }
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
