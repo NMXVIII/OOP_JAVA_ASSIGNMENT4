@@ -19,10 +19,10 @@ public class OrderService {
         this.menuRepo = menuRepo;
     }
 
-    public Order placeOrder(int customerId, List<OrderItem> items)
+    public Order placeOrder(int customerId, List<OrderItem> orderItems)
             throws SQLException, InvalidQuantityException, MenuItemNotAvailableException {
 
-        for (OrderItem orderItem : items) {
+        for (OrderItem orderItem : orderItems) {
             MenuItem menuItem = menuRepo.findById(orderItem.getMenuItemId());
 
             if (menuItem == null) {
@@ -30,14 +30,16 @@ public class OrderService {
             }
 
             if (menuItem.getQuantity() < orderItem.getQuantity()) {
-                throw new MenuItemNotAvailableException("Not enough quantity for " + menuItem.getName());
+                throw new InvalidQuantityException("Not enough quantity for " + menuItem.getName() +
+                                                         ". Requested: " + orderItem.getQuantity() +
+                                                         ", Available: " + orderItem.getQuantity());
             }
             orderItem.setMenuItemName(menuItem.getName());
             orderItem.setPrice(menuItem.getPrice());
         }
         Order order = new Order(customerId);
         order.setId(nextOrderId++);
-        order.setItems(items);
+        order.setItems(orderItems);
         activeOrders.put(order.getId(), order);
         return order;
     }
@@ -68,7 +70,7 @@ public class OrderService {
         return order;
     }
 
-    public void validateStock(int itemId, int requestedQty) throws MenuItemNotAvailableException, SQLException {
+    public void validateStock(int itemId, int requestedQty) throws MenuItemNotAvailableException, SQLException, InvalidQuantityException {
         MenuItem item = menuRepo.findById(itemId);
         if (item == null) {
             throw new MenuItemNotAvailableException("Item ID " + itemId + " does not exist.");
