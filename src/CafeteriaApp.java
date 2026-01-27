@@ -82,45 +82,20 @@ public class CafeteriaApp {
         try {
             System.out.print("Name: ");
             String name = scanner.nextLine();
-
-            if (name == null || name.trim().isEmpty()) {
-                System.out.println("Error: Name cannot be empty!");
-                return;
-            }
-
             System.out.print("Description: ");
             String desc = scanner.nextLine();
-
             System.out.print("Price: ");
             Double price = scanner.nextDouble();
-
-            if (price < 0) {
-                System.out.println("Error: Price cannot be negative!");
-                scanner.nextLine();
-                return;
-            }
-
             System.out.print("Quantity: ");
             Integer qty = scanner.nextInt();
             scanner.nextLine();
-
-            if (qty < 0) {
-                System.out.println("Error: Quantity cannot be negative!");
-                return;
-            }
-
-            MenuItem item = new MenuItem(name, desc, price, qty);
-            menuService.addMenuItem(item);
+            menuService.addMenuItem(new MenuItem(name, desc, price, qty));
             System.out.println("Item added!");
-        } catch (java.util.InputMismatchException e) {
-            System.out.println("Error: Please enter valid numbers for price and quantity! ");
-            scanner.nextLine();
-        } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+        } catch (InvalidInputException e) {
+            System.out.println("Validation error: " + e.getMessage());
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            scanner.nextLine();
         }
     }
 

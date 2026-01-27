@@ -67,4 +67,14 @@ public class OrderService {
         }
         return order;
     }
+
+    public void validateStock(int itemId, int requestedQty) throws MenuItemNotAvailableException, SQLException {
+        MenuItem item = menuRepo.findById(itemId);
+        if (item == null) {
+            throw new MenuItemNotAvailableException("Item ID " + itemId + " does not exist.");
+        }
+        if (item.getQuantity() < requestedQty) {
+            throw new InvalidQuantityException("Insufficient stock. Available: " + item.getQuantity());
+        }
+    }
 }

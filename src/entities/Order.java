@@ -49,4 +49,5 @@ public class Order {
         this.completed = completed;
         this.status = completed ? "COMPLETED" : "ACTIVE";
     }
+
 }
