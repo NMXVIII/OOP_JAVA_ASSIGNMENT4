@@ -27,5 +27,7 @@ public class OrderItem {
     public double getPrice() {
         return price;
     }
+    public void setMenuItemName(String name) { this.menuItemName = name; }
+    public void setPrice(double price) { this.price = price; }
 
 }

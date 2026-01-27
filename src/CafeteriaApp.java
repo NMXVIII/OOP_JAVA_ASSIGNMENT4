@@ -30,7 +30,7 @@ public class CafeteriaApp {
         this.paymentService = new PaymentService();
     }
 
-    public void run() {
+    public void run() throws SQLException {
         System.out.println("Welcome to Cafeteria!");
 
         while (true) {
@@ -144,51 +144,30 @@ public class CafeteriaApp {
         }
     }
 
-    private void placeOrder() {
-        try {
+    private void placeOrder()  {
             System.out.print("Enter customer ID: ");
             int customerId = getIntInput();
             List<OrderItem> orderItems = new ArrayList<>();
 
             while (true) {
-                System.out.println("\n--- Available Menu ---");
-                List<MenuItem> menu = menuService.getAllAvailableItems();
-                for (MenuItem item : menu) {
-                    System.out.printf("ID: %d | %s - $%.2f (Available: %d)%n",
-                            item.getId(), item.getName(), item.getPrice(), item.getQuantity());
+                try {
+                    menuService.getAllAvailableItems().forEach(System.out::println);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
-
                 System.out.print("\nEnter menu item ID (0 to finish): ");
                 int menuItemId = getIntInput();
                 if (menuItemId == 0) break;
-
                 System.out.print("Enter quantity: ");
                 int quantity = getIntInput();
-                if (quantity <= 0) {
-                    System.out.println("Quantity must be greater than 0");
-                    continue;
-                }
-
-                MenuItem menuItem = menuService.getMenuItemById(menuItemId);
-                OrderItem orderItem = new OrderItem(0, menuItemId, menuItem.getName(),
-                        quantity, menuItem.getPrice());
-                orderItems.add(orderItem);
-                System.out.println("Added to order!");
+                orderItems.add(new OrderItem(0, menuItemId, null, quantity, 0.0));
             }
-
-            if (orderItems.isEmpty()) {
-                System.out.println("No items in order!");
-                return;
-            }
-
+            try{
             Order order = orderService.placeOrder(customerId, orderItems);
             System.out.println("Order placed successfully! Order ID: " + order.getId());
-
-        } catch (InvalidQuantityException e) {
+            } catch (MenuItemNotAvailableException | InvalidQuantityException e) {
             System.out.println("Error: " + e.getMessage());
-        } catch (MenuItemNotAvailableException e) {
-            System.out.println("Error " + e.getMessage());
-        } catch (Exception e) {
+            } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }

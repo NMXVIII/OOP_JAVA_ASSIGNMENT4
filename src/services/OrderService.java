@@ -22,27 +22,26 @@ public class OrderService {
     public Order placeOrder(int customerId, List<OrderItem> items)
             throws SQLException, InvalidQuantityException, MenuItemNotAvailableException {
 
-        if (items == null || items.isEmpty()) {
-            throw new InvalidQuantityException("Order must contain at least one item");
-        }
+        if (items.isEmpty()) throw new InvalidQuantityException("Order must contain at least one item");
 
         for (OrderItem orderItem : items) {
-            if (orderItem.getQuantity() <= 0) {
-                throw new InvalidQuantityException("Quantity must be greater than 0");
-            }
+            if (orderItem.getQuantity() <= 0) throw new InvalidQuantityException("Quantity must be greater than 0");
 
             MenuItem menuItem = menuRepo.findById(orderItem.getMenuItemId());
 
-            if (menuItem.getQuantity() < orderItem.getQuantity()) {
-                throw new MenuItemNotAvailableException(
-                        "Not enough quantity for " + menuItem.getName()
-                );
+            if (menuItem == null) {
+                throw new MenuItemNotAvailableException("Menu item with ID " + orderItem.getMenuItemId() + " does not exist.");
             }
+
+            if (menuItem.getQuantity() < orderItem.getQuantity()) {
+                throw new MenuItemNotAvailableException("Not enough quantity for " + menuItem.getName());
+            }
+            orderItem.setMenuItemName(menuItem.getName());
+            orderItem.setPrice(menuItem.getPrice());
         }
         Order order = new Order(customerId);
         order.setId(nextOrderId++);
         order.setItems(items);
-
         activeOrders.put(order.getId(), order);
         return order;
     }
